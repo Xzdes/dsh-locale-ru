@@ -1,0 +1,5 @@
+# Bundle patch layer for dsh-locale-ru.
+# New plugin rows are inserted with the `insert` list (not id-overrides).
+- insert:
+    - id: locale-ru
+      name: dsh-locale-ru
