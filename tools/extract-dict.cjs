@@ -1,5 +1,5 @@
 // Statically extract a locale dictionary from a bundle, resolving const variables recursively via vm.
-// Usage: node extract-dict.js <bundleFile> <registerCallIndex>
+// Usage: node tools/extract-dict.cjs <bundleFile> <registerCallIndex>
 const fs = require('fs');
 const vm = require('vm');
 const code = fs.readFileSync(process.argv[2], 'utf8');

@@ -99,8 +99,10 @@ dsh plugin --profile desktop add dsh-locale-ru
   ```
 - `tools/` — крайне рекомендую включить tooling обновления перевода
   (лежит в `C:\Users\xzdes\Documents\deepseek-harness\default-workspace\.research`):
-  - `harvest.js` — извлекает все словари из установленного DSH
-  - `generate-client.js` — собирает `lib/client.js` из переводов с валидацией
+  - `harvest.cjs` — извлекает все словари из установленного DSH
+  - `generate-client.cjs` — собирает `lib/client.js` из переводов с валидацией
+  - `export-ru.cjs` — обратная выгрузка `lib/client.js` → `ru-chunk-*.json`
+  - `ru-chunk-*.json` — версионируемый исходник перевода (редактируется вручную)
   - `namespaces.json` — слепок en/zh строк текущей версии
   Без них обновление под новую версию DSH превратится в ручную боль.
 - `CHANGELOG.md` — начните с `1.0.0` и строки «Initial release: full Russian
@@ -155,9 +157,10 @@ npm publish --access public
 
 ## Цикл обновления под новые версии DSH
 
-1. Обновите DSH, запустите `node tools/harvest.js` против новой установки —
+1. Обновите DSH, запустите `node tools/harvest.cjs` против новой установки —
    получите новый `namespaces.json`
-2. `generate-client.js` покажет `MISSING`/`UNKNOWN` ключи — это и есть дельта
+2. `node tools/generate-client.cjs tools .` покажет `MISSING`/`UNKNOWN` ключи —
+   это и есть дельта
 3. Переведите дельту, поднимите `version` (semver) и при необходимости
    `engines.dsh`
 4. CHANGELOG → git tag → GitHub Release → (npm publish)

@@ -1,5 +1,5 @@
 // Harvest locale dictionaries from compiled DSH client bundles. v2
-// Usage: node harvest.js <bundlesDir> <outJson>
+// Usage: node tools/harvest.cjs <bundlesDir> <outJson>
 const fs = require('fs');
 const path = require('path');
 
