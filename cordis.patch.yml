@@ -3,3 +3,6 @@
 - insert:
     - id: locale-ru
       name: dsh-locale-ru
+      inject:
+        - locale
+        - slots

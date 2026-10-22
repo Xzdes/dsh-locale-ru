@@ -1,4 +1,4 @@
-// Generate lib/client.js from translated dictionaries and embed lazy auto-translate runtime.
+// Generate lib/client.js from translated dictionaries and embed the tested auto-translation runtime.
 const fs = require('fs');
 const path = require('path');
 const R = process.argv[2];
@@ -22,7 +22,7 @@ for (const [ns, dicts] of Object.entries(src)) {
     let ruVal = ruDict[key];
     if (ruVal === undefined || ruVal === null || (ruVal === '' && enVal !== '')) { problems.push(`MISSING ${ns}.${key}`); ruVal = enVal; }
     if (typeof ruVal !== 'string') { problems.push(`NON-STR ${ns}.${key}`); ruVal = enVal; }
-    const ph = (v) => [...v.matchAll(/\{(\w+)\}/g)].map((x) => x[1]).sort().join(',');
+    const ph = (v) => [...v.matchAll(/\{([\w.-]+)\}/g)].map((x) => x[1]).sort().join(',');
     if (ph(enVal) !== ph(ruVal)) { problems.push(`PLACEHOLDER ${ns}.${key}`); ruVal = enVal; }
     out[key] = ruVal;
   }
@@ -34,7 +34,7 @@ const strip = (file, replacements) => {
   let s = fs.readFileSync(path.join(pluginDir, 'lib', file), 'utf8');
   s = s.replace(/^\/\*\*[\s\S]*?\*\//, '');
   for (const [a, b] of replacements) s = s.replace(a, b);
-  return s;
+  return s.trim();
 };
 const providerSource = strip('translate-provider.js', [[/export const TranslateProvider/g, 'const TranslateProvider']]);
 const coreSource = strip('translate-core.js', [[/import \{ TranslateProvider \} from "\.\/translate-provider\.js";\s*/g, ''], [/export class TranslationRuntime/g, 'class TranslationRuntime']]);
@@ -53,17 +53,24 @@ window.__ModuleLoader__.load({
     ${indent(coreSource)}
     ${indent(settingsSource)}
     function apply(ctx) {
+      const runtime = new TranslationRuntime(ctx);
       ctx.effect(() => {
         try { return ctx.locale.addLanguage({ id: "ru", label: "Русский", fallback: "en" }); }
         catch { return void 0; }
       }, "dsh-locale-ru: language definition");
+      ctx.effect(() => {
+        try {
+          runtime.init();
+          return () => runtime.dispose();
+        } catch (error) {
+          console.warn("dsh-locale-ru: automatic translation capture disabled", error);
+          return void 0;
+        }
+      }, "dsh-locale-ru: translation dictionary capture");
       for (const ns of Object.keys(RU)) {
         ctx.effect(() => ctx.locale.register(ns, "ru", RU[ns]), "dsh-locale-ru: " + ns + " dictionary");
       }
-      // This row is registered without touching locale.register or configForms at boot.
-      // The runtime itself starts only when the user expands the row.
       ctx.effect(() => {
-        const runtime = new TranslationRuntime(ctx);
         const t = (key) => ({
           title: "Автоматический перевод плагинов",
           description: "Переводить отсутствующие строки интерфейса через выбранную модель."

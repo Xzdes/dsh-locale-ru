@@ -12,7 +12,7 @@ interface: chat, settings, sidebar, document previews, tools, and more —
 57 locale namespaces, ~2500 strings. English remains the fallback: any string
 missing a translation is shown in English, so the UI never breaks.
 
-Tested with DSH `0.2.0-rc.2` (see `engines.dsh` in `package.json`).
+Tested with DSH `0.2.1-rc.2` (see `engines.dsh` in `package.json`).
 
 ## Install
 
@@ -40,7 +40,7 @@ DeepSeek Harness is built on Cordis plugins, and its locale package
 (`@deepseek-ai/dsh-client-locale`) officially supports external language
 packs. This is a client-side plugin: it registers the `ru` language via
 `ctx.locale.addLanguage(...)` and one dictionary per UI namespace via
-`ctx.locale.register(ns, 'ru', {...})`. No application files are modified.
+`ctx.locale.register(ns, 'ru', {...})`. Optional auto-translation captures plugin UI dictionaries locally and writes results to a separate `ru-auto` locale so it never conflicts with existing `ru` registrations. It is disabled by default; requests are sent only after you configure a provider and explicitly start a scan. No application files are modified.
 
 ## Repository layout
 
@@ -73,7 +73,7 @@ MIT. Interface strings remain the property of the DeepSeek Harness authors
 (57 словарей, ~2500 строк). Непереведённые строки безопасно показываются
 на английском.
 
-Проверено на DSH `0.2.0-rc.2`.
+Проверено на DSH `0.2.1-rc.2`. Автоперевод плагинов отключён по умолчанию; он включается отдельно в Настройки → General.
 
 ### Установка
 
