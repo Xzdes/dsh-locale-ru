@@ -47,7 +47,7 @@ window.__ModuleLoader__.load({
   factory: (require) => {
     var module = { exports: {} };
     var exports = module.exports;
-    const inject = ["locale"];
+    const inject = ["locale", "slots"];
     const RU = ${dictJson.split('\n').join('\n    ')};
     ${indent(providerSource)}
     ${indent(coreSource)}
