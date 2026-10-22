@@ -53,17 +53,6 @@ for (const ns of Object.keys(ru)) {
 }
 
 const dictJson = JSON.stringify(finalRu, null, 2);
-// Embed the opt-in runtime translator into the browser bundle. The source files
-// are kept readable/testable, while the DSH loader receives one self-contained
-// client module (no external npm runtime dependency).
-const providerSource = fs.readFileSync(path.join(pluginDir, 'lib', 'translate-provider.js'), 'utf8')
-  .replace(/^\/\*\*[\\s\\S]*?\*\//, '')
-  .replace(/export const TranslateProvider/g, 'const TranslateProvider');
-const coreSource = fs.readFileSync(path.join(pluginDir, 'lib', 'translate-core.js'), 'utf8')
-  .replace(/^\/\*\*[\s\S]*?\*\//, '')
-  .replace(/^import \{ TranslateProvider \} from "\.\/translate-provider\.js";\s*/m, '')
-  .replace(/export class TranslationRuntime/g, 'class TranslationRuntime');
-const indentSource = (source) => source.split('\n').map((line) => line ? `  ${line}` : '').join('\n');
 const clientJs = `/**
  * dsh-locale-ru — web client bundle.
  * Registers the Russian language and its dictionaries for every built-in
@@ -75,13 +64,10 @@ window.__ModuleLoader__.load({
 \tfactory: (require) => {
 \t\tvar module = { exports: {} };
 \t\tvar exports = module.exports;
-\t\tconst React = require("react");
 \t\t/** Required service: the locale registry. */
 \t\tconst inject = ["locale"];
 \t\t/** Russian dictionaries, keyed by locale namespace. */
 \t\tconst RU = ${dictJson.split('\n').join('\n\t\t')};
-\t\t${indentSource(providerSource)}
-\t\t${indentSource(coreSource)}
 \t\t/**
 \t\t * Register the Russian language definition and one dictionary per
 \t\t * namespace as owned effects; dictionaries registered after the UI is
@@ -89,8 +75,6 @@ window.__ModuleLoader__.load({
 \t\t * @param ctx - Client root context.
 \t\t */
 \t\tfunction apply(ctx) {
-\t\t\tconst runtime = new TranslationRuntime(ctx);
-\t\t\tctx.effect(() => runtime.start(), "dsh-locale-ru: automatic translation");
 \t\t\tctx.effect(() => {
 \t\t\t\ttry {
 \t\t\t\t\treturn ctx.locale.addLanguage({ id: "ru", label: "Русский", fallback: "en" });
