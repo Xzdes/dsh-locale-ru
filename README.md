@@ -59,6 +59,21 @@ dsh-locale-ru/
 See [tools/README.md](tools/README.md): re-harvest the dictionaries from the
 installed app, translate the delta, regenerate `lib/client.js`.
 
+## Automatic translation of other plugins (optional)
+
+The pack can also **collect dictionaries from installed plugins and translate
+new strings through a model**. The feature is opt-in and disabled by default.
+
+1. After installing the pack, open **Settings → General → Language** and find
+   the **Автоматический перевод плагинов** row.
+2. Enter your API key (password), model name and endpoint.
+3. Click **Перевести новые строки**. New strings are sent in batches; results
+   are cached locally on this device and applied immediately.
+
+Only strings from `ctx.locale.register` dictionaries are collected — chat
+content, file paths and secrets are never sent. See
+[tools/auto-translate.md](tools/auto-translate.md) for the full design.
+
 ## License
 
 MIT. Interface strings remain the property of the DeepSeek Harness authors
@@ -86,3 +101,13 @@ dsh plugin --profile desktop add github:xzdes/dsh-locale-ru
 
 Плагин работает только через публичный API локализации и не изменяет файлы
 приложения. Подробности — в английском разделе выше.
+
+### Автоматический перевод плагинов (опционально)
+
+После установки в **Настройки → General → Language** появится строка
+**Автоматический перевод плагинов**. Там можно указать модель, endpoint и
+API-ключ, затем нажать **Перевести новые строки** — плагин соберёт словари
+установленных плагинов и переведёт отсутствующие строки через нейросеть.
+Результаты кэшируются локально на этом устройстве и применяются сразу.
+Переводятся только строки из `ctx.locale.register`; чат, пути и пароли не
+отправляются. Подробности — в [tools/auto-translate.md](tools/auto-translate.md).
